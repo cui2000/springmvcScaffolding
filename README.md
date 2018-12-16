@@ -1,1 +1,1 @@
-这是一个springmvc脚手架项目
+这是一个springmvc脚手架项目。
