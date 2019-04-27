@@ -18,6 +18,10 @@ public class BaseDaoImpl<T> implements IBaseDao<T> {
 
 	@Autowired
 	private SessionFactory sessionFactory;
+	
+	public SessionFactory getSessionFactory() {
+		return sessionFactory;
+	}
 
 	public void add(T t) {
 		Session session = sessionFactory.getCurrentSession();

@@ -18,37 +18,117 @@
 <title>hello world</title>
 <script type="text/javascript">
 	$(function() {
-		var vue_actor = new Vue({
-			el : "#div_actor",
-			data : {
-				pageEntity : {},
-				loaded:false
-			},
-			methods:{
-				refreshActorData:function (page) {
-					vue_actor.loaded=false;
-					axios.get('${pageContext.request.contextPath}/getActorData', {
-					    params: {
-					      page: page||1
-					    }
-					  })
-					  .then(function (response) {
-					    vue_actor.pageEntity = response.data;
-						vue_actor.pageEntity.totalPage = response.data.totalCount
+		function createVue(id,url){
+			var vue = new Vue({
+				el : id,
+				data : {
+					pageEntity : {},
+					loaded:false
+				},
+				methods:{
+					refreshData:function (page) {
+						vue.loaded=false;
+						axios.get(url, {
+						    params: {
+						      page: page||1
+						    }
+						  })
+						  .then(function (response) {
+							  vue.pageEntity = response.data;
+							  vue.pageEntity.totalPage = response.data.totalCount
 								% response.data.rowSize == 0 ? response.data.totalCount
-								/ response.data.rowSize
-								: ((response.data.totalCount / response.data.rowSize) + 1);
-						vue_actor.loaded=true;
-					  })
-					  .catch(function (error) {
-						  alert("异常，请联系管理员.")
-					  });
+										/ response.data.rowSize
+										: (parseInt(response.data.totalCount / response.data.rowSize) + 1);
+							  vue.loaded=true;
+						  })
+						  .catch(function (error) {
+							  alert("异常，请联系管理员.")
+						  });
+					}
 				}
-			}
-		});
+			});
+			return vue;
+		}
 		
-		vue_actor.refreshActorData();
+		// 演员
+		var vue_actor = createVue('#div_actor','${pageContext.request.contextPath}/getActorData');
+		vue_actor.refreshData();
+		
+		// 客户
+		var vue_customer = createVue('#div_customer','${pageContext.request.contextPath}/getCustomerData');
+		vue_customer.refreshData();
+		
+		// 电影
+		var vue_film = createVue('#div_film','${pageContext.request.contextPath}/getFilmData');
+		vue_film.refreshData();
+		
+		
+		
+		
 	});
+	
+	/*
+	function test(key) {
+		return axios.get('${pageContext.request.contextPath}/test?key='+key);
+	}
+
+	function requests(){
+		var arr = [];
+		for(var i = 0;i<40000;i++){
+			arr.push(test(random()));
+		}
+		return arr;
+	}
+	
+	function random(){
+	    return Math.floor(Math.random()*10);
+	}
+	
+	function sendTest(){
+		var d = new Date();
+		axios.all(requests())
+			.then(axios.spread(function (acct, perms) {
+			// 两个请求现在都执行完成
+				console.log("acct");
+				console.log(acct);
+				console.log("perms");
+				console.log(perms);
+				console.log(new Date().getTime()-d.getTime())
+		}));
+	}
+	*/
+	
+	function testRent(){
+		axios.get('${pageContext.request.contextPath}/testRent').then(function(res){
+			console.log(res);
+		});
+	}
+	
+	function testRent_2(){
+		axios.all([testRent(),testRent()])
+		.then(axios.spread(function (acct, perms) {
+		// 两个请求现在都执行完成
+			console.log("acct");
+			console.log(acct);
+			console.log("perms");
+			console.log(perms);
+		}));
+	}
+	function test() {
+		axios.get('http://localhost:8108/demo/getActorData').then(function(res){
+			console.log(res);
+		});
+	}
+	function rent() {
+		axios.get('${pageContext.request.contextPath}/rent').then(function(res){
+			console.log(res);
+		});
+	}
+	function autoRent() {
+		axios.get('${pageContext.request.contextPath}/autoRent').then(function(res){
+			console.log(res);
+		});
+	}
 </script>
 </head>
 <body>
@@ -74,6 +154,15 @@
 		</form>
 	</div>
 	</nav>
+	<div>
+		<button onclick="testRent()">testRent</button>
+		<button onclick="testRent_2()">testRent_2</button>
+		<button onclick="test()">test</button>
+		<button onclick="rent()">rent</button>
+		<button onclick="autoRent()">autoRent</button>
+		<!-- <button onclick="sendTestResult()">sendTestResult</button>
+		<button onclick="sendTestReset()">sendTestReset</button> -->
+	</div>
 	<div class="container-fluid">
 		<div class="row">
 			<div class="col" id="div_actor">
@@ -102,19 +191,91 @@
 					</table>
 					<nav>
 					<ul class="pagination justify-content-center">
-						<li class="page-item" :class="{disabled:pageEntity.currentPage == 1}"><a v-on:click="refreshActorData(1)" class="page-link" href="javascript:void(0)">&laquo;</a></li>
-						<li class="page-item" :class="{disabled:pageEntity.currentPage == 1}"><a v-on:click="refreshActorData(pageEntity.currentPage-1)" class="page-link" href="javascript:void(0)">&lt;</a></li>
+						<li class="page-item" :class="{disabled:pageEntity.currentPage == 1}"><a v-on:click="refreshctorData(1)" class="page-link" href="javascript:void(0)">&laquo;</a></li>
+						<li class="page-item" :class="{disabled:pageEntity.currentPage == 1}"><a v-on:click="refreshData(pageEntity.currentPage-1)" class="page-link" href="javascript:void(0)">&lt;</a></li>
 						<li v-for="(page,index) in pageEntity.totalPage" class="page-item" :class="{active:page == pageEntity.currentPage}"><span v-if="page == pageEntity.currentPage" class="page-link">
 								{{page}} <span class="sr-only">(current)</span>
-						</span> <a v-else v-on:click="refreshActorData(page)" class="page-link" href="javascript:void(0)">{{page}}</a></li>
-						<li class="page-item" :class="{disabled:pageEntity.currentPage == pageEntity.totalPage}"><a v-on:click="refreshActorData(pageEntity.currentPage+1)" class="page-link" href="javascript:void(0)">&gt;</a></li>
-						<li class="page-item" :class="{disabled:pageEntity.currentPage == pageEntity.totalPage}"><a v-on:click="refreshActorData(pageEntity.totalPage)" class="page-link" href="javascript:void(0)">&raquo;</a></li>
+						</span> <a v-else v-on:click="refreshData(page)" class="page-link" href="javascript:void(0)">{{page}}</a></li>
+						<li class="page-item" :class="{disabled:pageEntity.currentPage == pageEntity.totalPage}"><a v-on:click="refreshData(pageEntity.currentPage+1)" class="page-link" href="javascript:void(0)">&gt;</a></li>
+						<li class="page-item" :class="{disabled:pageEntity.currentPage == pageEntity.totalPage}"><a v-on:click="refreshData(pageEntity.totalPage)" class="page-link" href="javascript:void(0)">&raquo;</a></li>
 					</ul>
 					</nav>
 				</div>
 			</div>
-			<div class="col">One of three columns</div>
-			<div class="col">One of three columns</div>
+			<div id="div_customer" class="col">
+				<h1>Customer Data</h1>
+				<div v-if="!loaded" class="spinner-border" role="status">
+					<span class="sr-only">Loading...</span>
+				</div>
+				<div v-if="loaded">
+					<table class="table table-hover table-sm table-striped">
+						<thead class="thead-dark">
+							<tr>
+								<th scope="col">#</th>
+								<th scope="col">FirstName</th>
+								<th scope="col">LastName</th>
+								<th scope="col">lastUpdate</th>
+							</tr>
+						</thead>
+						<tbody>
+							<tr v-for="(customer,index) in pageEntity.datas">
+								<th scope="row">{{(pageEntity.currentPage-1)*pageEntity.rowSize+index+1}}</th>
+								<td>{{customer.firstName }}</td>
+								<td>{{customer.lastName }}</td>
+								<td>{{moment(customer.lastUpdate).format('YYYY-MM-DD HH:mm:ss') }}</td>
+							</tr>
+						</tbody>
+					</table>
+					<nav>
+					<ul class="pagination justify-content-center">
+						<li class="page-item" :class="{disabled:pageEntity.currentPage == 1}"><a v-on:click="refreshData(1)" class="page-link" href="javascript:void(0)">&laquo;</a></li>
+						<li class="page-item" :class="{disabled:pageEntity.currentPage == 1}"><a v-on:click="refreshData(pageEntity.currentPage-1)" class="page-link" href="javascript:void(0)">&lt;</a></li>
+						<li v-for="(page,index) in pageEntity.totalPage" class="page-item" :class="{active:page == pageEntity.currentPage}"><span v-if="page == pageEntity.currentPage" class="page-link">
+								{{page}} <span class="sr-only">(current)</span>
+						</span> <a v-else v-on:click="refreshData(page)" class="page-link" href="javascript:void(0)">{{page}}</a></li>
+						<li class="page-item" :class="{disabled:pageEntity.currentPage == pageEntity.totalPage}"><a v-on:click="refreshData(pageEntity.currentPage+1)" class="page-link" href="javascript:void(0)">&gt;</a></li>
+						<li class="page-item" :class="{disabled:pageEntity.currentPage == pageEntity.totalPage}"><a v-on:click="refreshData(pageEntity.totalPage)" class="page-link" href="javascript:void(0)">&raquo;</a></li>
+					</ul>
+					</nav>
+				</div>
+			</div>
+			<div id="div_film" class="col">
+				<h1>Film Data</h1>
+				<div v-if="!loaded" class="spinner-border" role="status">
+					<span class="sr-only">Loading...</span>
+				</div>
+				<div v-if="loaded">
+					<table class="table table-hover table-sm table-striped">
+						<thead class="thead-dark">
+							<tr>
+								<th scope="col">#</th>
+								<th scope="col">Title</th>
+								<th scope="col">Description</th>
+								<th scope="col">lastUpdate</th>
+							</tr>
+						</thead>
+						<tbody>
+							<tr v-for="(film,index) in pageEntity.datas">
+								<th scope="row">{{(pageEntity.currentPage-1)*pageEntity.rowSize+index+1}}</th>
+								<td>{{film.title }}</td>
+								<td>{{film.description }}</td>
+								<td>{{moment(film.lastUpdate).format('YYYY-MM-DD HH:mm:ss') }}</td>
+							</tr>
+						</tbody>
+					</table>
+					<nav>
+					<ul class="pagination justify-content-center">
+						<li class="page-item" :class="{disabled:pageEntity.currentPage == 1}"><a v-on:click="refreshData(1)" class="page-link" href="javascript:void(0)">&laquo;</a></li>
+						<li class="page-item" :class="{disabled:pageEntity.currentPage == 1}"><a v-on:click="refreshData(pageEntity.currentPage-1)" class="page-link" href="javascript:void(0)">&lt;</a></li>
+						<li v-for="(page,index) in pageEntity.totalPage" class="page-item" :class="{active:page == pageEntity.currentPage}"><span v-if="page == pageEntity.currentPage" class="page-link">
+								{{page}} <span class="sr-only">(current)</span>
+						</span> <a v-else v-on:click="refreshData(page)" class="page-link" href="javascript:void(0)">{{page}}</a></li>
+						<li class="page-item" :class="{disabled:pageEntity.currentPage == pageEntity.totalPage}"><a v-on:click="refreshData(pageEntity.currentPage+1)" class="page-link" href="javascript:void(0)">&gt;</a></li>
+						<li class="page-item" :class="{disabled:pageEntity.currentPage == pageEntity.totalPage}"><a v-on:click="refreshData(pageEntity.totalPage)" class="page-link" href="javascript:void(0)">&raquo;</a></li>
+					</ul>
+					</nav>
+				</div>
+			</div>
 		</div>
 	</div>
 </body>

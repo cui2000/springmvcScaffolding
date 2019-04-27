@@ -4,48 +4,55 @@ import java.io.Serializable;
 import java.util.Date;
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
 
 @Entity(name = "store")
-public class Store  implements Serializable {
+public class Store implements Serializable {
 	private static final long serialVersionUID = 1L;
 
 	@Id
-	@Column(name="store_id")
-	private byte storeId;
-	@Column(name="manager_staff_id")
-	private byte managerStaffId;
-	@Column(name="address_id")
-	private int addressId;
-	@Column(name="last_update")
+	@Column(name = "store_id")
+	private Integer storeId;
+	@Column(name = "manager_staff_id")
+	private Integer managerStaffId;
+	@ManyToOne(fetch = FetchType.LAZY)
+	@JoinColumn(name = "address_id")
+	private Address address;
+	@Column(name = "last_update")
 	private Date lastUpdate;
 
-	public byte getStoreId(){
+	public Integer getStoreId() {
 		return storeId;
 	}
 
-	public void setStoreId(byte storeId){
+	public void setStoreId(Integer storeId) {
 		this.storeId = storeId;
 	}
-	public byte getManagerStaffId(){
+
+	public Integer getManagerStaffId() {
 		return managerStaffId;
 	}
 
-	public void setManagerStaffId(byte managerStaffId){
+	public void setManagerStaffId(Integer managerStaffId) {
 		this.managerStaffId = managerStaffId;
 	}
-	public int getAddressId(){
-		return addressId;
+
+	public Address getAddress() {
+		return address;
 	}
 
-	public void setAddressId(int addressId){
-		this.addressId = addressId;
+	public void setAddress(Address address) {
+		this.address = address;
 	}
-	public Date getLastUpdate(){
+
+	public Date getLastUpdate() {
 		return lastUpdate;
 	}
 
-	public void setLastUpdate(Date lastUpdate){
+	public void setLastUpdate(Date lastUpdate) {
 		this.lastUpdate = lastUpdate;
 	}
 
