@@ -1,4 +1,7 @@
-apply plugin: 'java'
+plugins {
+	id 'java'
+	id 'maven'
+}
 repositories {
 	maven {
 		url 'http://maven.aliyun.com/nexus/content/groups/public/'
