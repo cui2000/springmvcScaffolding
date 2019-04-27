@@ -1,22 +1,28 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<Configuration>
+<Configuration monitorInterval="5">
+	<Properties>
+		<Property name="logPath">F:/study/java/logs</Property>
+	</Properties>
 	<Appenders>
 		<Console name="console" target="SYSTEM_OUT">
 			<PatternLayout pattern="%d %-5p [%t] %C{2} (%F:%L) - %m%n" />
 		</Console>
-		<RollingFile name="RollingFile" fileName="logs/springmvcScaffolding.log" filePattern="logs/$${date:yyyy-MM}/app-%d{MM-dd-yyyy}-%i.log.gz">
+		<RollingFile name="RollingFile" fileName="${logPath}/springmvcScaffolding.log" filePattern="${logPath}/$${date:yyyy-MM}/app-%d{MM-dd-yyyy}-%i.log.gz" immediateFlush="true">
+			<!--控制台只输出level及以上级别的信息（onMatch），其他的直接拒绝（onMismatch） -->
+			<!-- <Filters> <ThresholdFilter level="INFO"/> <ThresholdFilter level="WARN" onMatch="DENY" onMismatch="NEUTRAL"/> </Filters> -->
 			<PatternLayout>
 				<Pattern>%d{MM-dd-yyyy} %p %c{1.} [%t] -%M-%L- %m%n</Pattern>
 			</PatternLayout>
 			<Policies>
 				<TimeBasedTriggeringPolicy />
-				<SizeBasedTriggeringPolicy size="1 KB" />
+				<SizeBasedTriggeringPolicy size="1KB" />
 			</Policies>
-			<DefaultRolloverStrategy fileIndex="max" max="2" />
+			<DefaultRolloverStrategy max="5" />
 		</RollingFile>
 	</Appenders>
 	<Loggers>
 		<Root level="info">
+			<AppenderRef ref="RollingFile" />
 			<AppenderRef ref="console" />
 		</Root>
 	</Loggers>

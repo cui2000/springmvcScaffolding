@@ -12,17 +12,17 @@ public class Language  implements Serializable {
 
 	@Id
 	@Column(name="language_id")
-	private byte languageId;
+	private Integer languageId;
 	@Column(name="name")
 	private String name;
 	@Column(name="last_update")
 	private Date lastUpdate;
 
-	public byte getLanguageId(){
+	public Integer getLanguageId(){
 		return languageId;
 	}
 
-	public void setLanguageId(byte languageId){
+	public void setLanguageId(Integer languageId){
 		this.languageId = languageId;
 	}
 	public String getName(){

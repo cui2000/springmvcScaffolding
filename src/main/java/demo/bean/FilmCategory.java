@@ -15,7 +15,7 @@ public class FilmCategory  implements Serializable {
 	private int filmId;
 	@Id
 	@Column(name="category_id")
-	private byte categoryId;
+	private Integer categoryId;
 	@Column(name="last_update")
 	private Date lastUpdate;
 
@@ -26,11 +26,11 @@ public class FilmCategory  implements Serializable {
 	public void setFilmId(int filmId){
 		this.filmId = filmId;
 	}
-	public byte getCategoryId(){
+	public Integer getCategoryId(){
 		return categoryId;
 	}
 
-	public void setCategoryId(byte categoryId){
+	public void setCategoryId(Integer categoryId){
 		this.categoryId = categoryId;
 	}
 	public Date getLastUpdate(){
