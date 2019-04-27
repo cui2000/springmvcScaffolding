@@ -191,6 +191,6 @@
 
 	</dependencies>
 	<build>
-		<finalName>HelloSpringMVC</finalName>
+		<finalName>springmvcScaffolding</finalName>
 	</build>
 </project>
